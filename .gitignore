@@ -1,0 +1,81 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Data files (large datasets should not be committed)
+data/raw/*.csv
+data/raw/*.zip
+data/raw/*.parquet
+data/processed/*.csv
+data/processed/*.parquet
+*.h5
+*.hdf5
+
+# Model files (large trained models should not be committed)
+models/saved/*.pkl
+models/saved/*.h5
+models/saved/*.pt
+models/saved/*.pth
+models/saved/*.joblib
+models/saved/*.pickle
+
+# Reports (generated files)
+reports/*.pdf
+reports/*.html
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/

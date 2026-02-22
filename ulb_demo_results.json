@@ -1,0 +1,30 @@
+{
+  "dataset": "ULB Credit Card Fraud",
+  "n_samples": 284807,
+  "n_features": 30,
+  "fraud_rate": 0.001727485630620034,
+  "model_performance": {
+    "auc_roc": 0.7846604672420766,
+    "f1": 0.6201550387596899
+  },
+  "latency": {
+    "fastshap_p95_ms": 0.33901929855346574,
+    "fastshap_p99_ms": 0.6418204307556146,
+    "fastshap_throughput_tps": 4885.493906970351
+  },
+  "fidelity": {
+    "pearson_r": 0.7723321298918809,
+    "spearman_r": -0.04010710412326291,
+    "pearson_per_instance_mean": -0.04192557968445149,
+    "pearson_per_instance_std": 0.31133512806061003,
+    "top5_rank_overlap": 0.0582,
+    "mse": 7.41338332352738e-06,
+    "mae": 4.049439532747456e-05
+  },
+  "targets_met": {
+    "p95_under_50ms": true,
+    "p99_under_100ms": true,
+    "auc_over_0.98": false,
+    "f1_over_0.95": false
+  }
+}
