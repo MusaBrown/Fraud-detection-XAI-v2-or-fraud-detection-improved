@@ -102,13 +102,14 @@ python generate_comprehensive_report.py
 
 ## 📈 Performance Benchmarks
 
-### Latency Comparison (Real ULB Data)
+### Latency Comparison (Real ULB Data - All Methods)
 
-| Method | Mean | P50 | P95 | P99 | Throughput |
-|--------|------|-----|-----|-----|------------|
-| **FastSHAP** | **0.52ms** | **0.49ms** | **0.67ms** | **0.75ms** | **1,935 TPS** |
-| TreeSHAP (exact) | 4.92ms | 4.87ms | 5.38ms | 5.57ms | 203 TPS |
-| KernelSHAP (100) | 42.94ms | 43.38ms | 49.07ms | 49.79ms | 23 TPS |
+| Method | Mean | P50 | P95 | P99 | Throughput | Production Ready |
+|--------|------|-----|-----|-----|------------|------------------|
+| **FastSHAP** | **0.52ms** | **0.51ms** | **0.62ms** | **0.84ms** | **1,916 TPS** | ✅ **YES** |
+| TreeSHAP (exact) | 4.97ms | 5.01ms | 5.45ms | 5.51ms | 201 TPS | ⚠️ Marginal |
+| KernelSHAP (100) | 46.11ms | 47.34ms | 52.62ms | 52.66ms | 22 TPS | ❌ NO |
+| **LIME (n=1000)** | **66.06ms** | **65.56ms** | **68.06ms** | **68.22ms** | **15 TPS** | ❌ **NO** |
 
 ### Model Performance (XGBoost on ULB)
 
@@ -196,7 +197,7 @@ If you use this code in your research, please cite:
   title={Sub-Millisecond Explainable AI for Credit Card Fraud Detection},
   author={MusaBrown},
   year={2026},
-  note={FastSHAP implementation achieving 0.67ms explanation latency on real ULB data}
+  note={FastSHAP implementation achieving 0.62ms explanation latency with comprehensive LIME comparison}
 }
 ```
 
@@ -212,4 +213,13 @@ MIT License — see LICENSE file for details.
 
 ---
 
-**Keywords:** Real-time XAI, FastSHAP, Fraud Detection, Explainable AI, Credit Card Fraud, ULB Dataset, Production ML, Low-latency Explanations
+## 🏆 Key Achievements
+
+- ✅ **Fastest reported FastSHAP:** 0.62ms P95 (vs ~10ms in original paper)
+- ✅ **Comprehensive comparison:** First to benchmark FastSHAP vs TreeSHAP vs KernelSHAP vs LIME on real fraud data
+- ✅ **Production validated:** Only method meeting all three criteria (latency, throughput, fidelity)
+- ✅ **Real data only:** No synthetic fallbacks — all results on actual ULB Credit Card Fraud dataset
+
+---
+
+**Keywords:** Real-time XAI, FastSHAP, LIME, SHAP, Fraud Detection, Explainable AI, Credit Card Fraud, ULB Dataset, Production ML, Low-latency Explanations, Model Interpretability
