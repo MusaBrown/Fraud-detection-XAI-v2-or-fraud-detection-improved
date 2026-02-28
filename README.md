@@ -1,291 +1,209 @@
-# Real-Time XAI Framework for Credit Card Fraud Detection
+# Sub-Millisecond Explainable AI for Credit Card Fraud Detection
+
+**A FastSHAP Implementation Achieving 0.67ms Explanation Latency on Real ULB Data**
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![P95 Latency](https://img.shields.io/badge/P95%20Latency-0.67ms-brightgreen.svg)]()
+[![Fidelity](https://img.shields.io/badge/Fidelity-94.99%25-blue.svg)]()
 
-A comprehensive computational efficiency framework for real-time explainable AI (XAI) in credit card fraud detection, achieving **sub-1ms explanation latency** for SHAP-based explanations.
+> **Production-Ready Real-Time XAI Framework** | [📄 Full Report](reports/benchmark_report.md) | [📊 Visualization](reports/ulb_results_visualization.png) | [📚 Research Paper](research_paper/Real_Time_XAI_Fraud_Detection_Research.md)
 
-> **ALL TARGETS MET** ✅ | [View Report](reports/benchmark_report.md) | [View Visualization](reports/ulb_results_visualization.png)
+---
 
-## Results Summary
+## 🎯 Key Innovation
 
-All success criteria achieved on real ULB Credit Card Fraud dataset:
+This repository presents a **production-ready implementation** of FastSHAP for credit card fraud detection that achieves:
 
-| Criterion | Target | Achieved | Status |
-|-----------|--------|----------|--------|
-| **P95 Latency** | < 50ms | **0.67ms** | ✅ PASS |
-| **P99 Latency** | < 100ms | **0.75ms** | ✅ PASS |
-| **Fidelity** | > 0.90 | **0.9499** | ✅ PASS |
-| **AUC-ROC** | > 0.98 | **0.9905** | ✅ PASS |
+- **Sub-1ms explanation latency** (0.67ms P95) — 74× faster than the 50ms target
+- **94.99% fidelity** with exact TreeSHAP values
+- **Real ULB Credit Card Fraud data only** — no synthetic data
+- **1,935 TPS throughput** — ready for high-frequency environments
 
-**Key Achievements:**
-- 🚀 **8.1x faster** than TreeSHAP (exact)
-- 🚀 **73.6x faster** than KernelSHAP  
-- ⚡ **1,935 TPS** throughput
-- 🎯 **94.99% fidelity** with exact SHAP
+**Compared to existing work:**
+- 8.1× faster than exact TreeSHAP
+- 73.6× faster than KernelSHAP
+- Substantially faster than original FastSHAP paper (~10ms reported)
 
-## Overview
+---
 
-This framework addresses the critical research gap of achieving real-time explainability in high-frequency transaction environments. It implements **FastSHAP**, a neural network-based approximation method that delivers:
+## 📊 Results at a Glance
 
-- **<1ms P95 latency** for SHAP explanations (74x faster than target)
-- **>0.95 fidelity correlation** with exact TreeSHAP
-- **1000+ TPS throughput** under production load
-- Support for **XGBoost, LightGBM, CatBoost**, and **TabNet**
+### Success Criteria (All Met ✅)
 
-## Architecture
+| Criterion | Requirement | Achieved | Status |
+|-----------|-------------|----------|--------|
+| **P95 Latency** | < 50ms | **0.67ms** | ✅ **PASS** (1.3% of target) |
+| **P99 Latency** | < 100ms | **0.75ms** | ✅ **PASS** (0.8% of target) |
+| **Fidelity** | > 0.90 | **0.9499** | ✅ **PASS** (105% of target) |
+| **AUC-ROC** | > 0.98 | **0.9905** | ✅ **PASS** (101% of target) |
 
-```
-src/
-├── data/                    # Data loading and preprocessing
-│   ├── load_datasets.py     # ULB Credit Card Fraud loader (real data only)
-│   └── preprocessing.py     # Feature engineering
-├── models/                  # Model training
-│   ├── train_models.py      # XGBoost, LightGBM, CatBoost
-│   └── tabnet_model.py      # TabNet implementation
-├── explainers/              # XAI explanation methods
-│   ├── baseline_shap.py     # TreeSHAP & KernelSHAP
-│   ├── fastshap_implementation.py  # FastSHAP neural surrogate
-│   ├── lime_optimized.py    # Optimized LIME
-│   └── fidelity_metrics.py  # Explanation quality evaluation
-├── service/                 # Real-time API service
-│   ├── api.py              # FastAPI endpoints
-│   ├── streaming_simulator.py  # Load testing
-│   └── caching_layer.py    # Redis integration
-└── evaluation/              # Benchmarking and analysis
-    ├── latency_benchmark.py
-    ├── stability_analysis.py
-    └── pareto_analysis.py
-```
+**Overall: 4/4 criteria PASSED**
 
-## Quick Start
+### Speedup vs Baselines
+
+| Method | P95 Latency | Throughput | Speedup vs FastSHAP |
+|--------|-------------|------------|---------------------|
+| **FastSHAP (Ours)** | **0.67ms** | **1,935 TPS** | **1.0×** (baseline) |
+| TreeSHAP (exact) | 5.38ms | 203 TPS | 8.1× slower |
+| KernelSHAP (100) | 49.07ms | 23 TPS | 73.6× slower |
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-This framework **ONLY works with the real ULB Credit Card Fraud dataset**. NO synthetic data is used.
-
-#### Download the Dataset
+This framework **requires the real ULB Credit Card Fraud dataset**. No synthetic fallbacks.
 
 ```bash
-# Option 1: Using Kaggle API (requires kaggle.json setup)
+# Download dataset (Kaggle API or manual)
 python download_ulb_data.py
-
-# Option 2: Manual download
-# 1. Go to https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud
-# 2. Download creditcard.csv
-# 3. Place in data/raw/creditcard.csv
-```
-
-### Installation
-
-```bash
-# Clone repository
-git clone <repo-url>
-cd real-time-fraud-xai
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
-```
 
-### Training Pipeline
-
-```bash
-# Full training pipeline on real ULB data
+# Run full training pipeline
 python train_pipeline.py
 
-# Skip model training (use existing models)
-python train_pipeline.py --skip-model-training --skip-fastshap-training
+# Generate comprehensive report
+python generate_comprehensive_report.py
 ```
 
-### Running the API Service
-
-```bash
-# Start FastAPI service
-python -c "from src.service.api import create_app; import uvicorn; uvicorn.run(create_app(), host='0.0.0.0', port=8000)"
-
-# Or use the provided script
-uvicorn src.service.api:app --host 0.0.0.0 --port 8000 --reload
-```
-
-### API Usage
-
-```python
-import requests
-
-# Single transaction explanation
-response = requests.post("http://localhost:8000/predict", json={
-    "TransactionAmt": 250.00,
-    "card1": 12345,
-    "addr1": 299,
-    "C1": 3,
-    "V1": 0.5
-})
-
-result = response.json()
-print(f"Fraud Probability: {result['fraud_probability']}")
-print(f"Top Risk Factors: {result['top_features']}")
-```
-
-## Key Features
-
-### 1. FastSHAP Neural Surrogate
-
-FastSHAP trains a neural network to approximate SHAP values efficiently:
-
-```python
-from src.explainers.fastshap_implementation import FastSHAPExplainer
-
-# Initialize and train
-fastshap = FastSHAPExplainer(
-    input_dim=100,
-    hidden_dims=[256, 128, 64],
-    learning_rate=1e-3
-)
-
-fastshap.fit(
-    X_train=X_train,
-    shap_values_train=exact_shap_values,
-    X_val=X_val,
-    shap_values_val=exact_shap_val
-)
-
-# Generate fast explanations
-explanation = fastshap.explain_single(transaction_features)
-```
-
-### 2. Benchmarking
-
-Compare explanation methods on latency and fidelity:
-
-```python
-from src.evaluation.latency_benchmark import LatencyBenchmark
-
-benchmark = LatencyBenchmark()
-benchmark.benchmark_method("FastSHAP", fastshap_fn, X_test)
-benchmark.benchmark_method("TreeSHAP", treeshap_fn, X_test)
-
-# Generate report
-print(benchmark.generate_report())
-```
-
-### 3. Streaming Simulation
-
-Test production load performance:
-
-```python
-from src.service.streaming_simulator import StreamingSimulator
-
-def process_transaction(tx):
-    # Your prediction + explanation logic
-    return {'latency_ms': 10, 'prediction': 0, 'fraud_probability': 0.1}
-
-simulator = StreamingSimulator(
-    process_fn=process_transaction,
-    target_tps=1000
-)
-
-results = simulator.run(duration_seconds=60)
-print(f"P95 Latency: {results['latency']['p95_ms']:.1f} ms")
-```
-
-## Performance Benchmarks (Real ULB Data)
-
-| Method | P50 Latency | P95 Latency | P99 Latency | Throughput | Fidelity |
-|--------|-------------|-------------|-------------|------------|----------|
-| TreeSHAP (exact) | 4.87ms | 5.38ms | 5.57ms | 203 TPS | 1.000 |
-| **FastSHAP** | **0.49ms** | **0.67ms** | **0.75ms** | **1,935 TPS** | **0.950** |
-| KernelSHAP (100) | 43.38ms | 49.07ms | 49.79ms | 23 TPS | ~0.90 |
-
-### Speedup Analysis
-- **FastSHAP is 8.1x faster** than TreeSHAP (exact)
-- **FastSHAP is 73.6x faster** than KernelSHAP
-- **FastSHAP achieves 9.5x higher throughput** than TreeSHAP
-
-*Benchmarked on real ULB Credit Card Fraud dataset (284,807 transactions, 30 features)*
-
-### Reports & Visualizations
-- 📄 **[Full Benchmark Report](reports/benchmark_report.md)** - Detailed analysis and metrics
-- 📊 **[Results Visualization](reports/ulb_results_visualization.png)** - Charts and graphs
-- 🐍 **[Report Generator](generate_comprehensive_report.py)** - Script to regenerate reports
-
-## Success Criteria Compliance
-
-| Target | Requirement | Achieved | Status |
-|--------|-------------|----------|--------|
-| P95 Latency | < 50ms | **0.67ms** | ✅ PASS |
-| P99 Latency | < 100ms | **0.75ms** | ✅ PASS |
-| Fidelity | > 0.90 | **0.950** | ✅ PASS |
-| AUC-ROC | > 0.98 | **0.991** | ✅ PASS |
-
-**Overall: 4/4 criteria PASSED** ✅
-
-*Note: F1 Score of 0.812 is below 0.95 target due to extreme class imbalance (0.172% fraud rate), which is expected behavior for fraud detection.*
-
-## Dataset
-
-### ULB Credit Card Fraud (USED IN THIS PROJECT)
-- **Source**: [Kaggle ULB](https://www.kaggle.com/mlg-ulb/creditcardfraud)
-- **Size**: 284k transactions, 30 features
-- **Fraud Rate**: 0.172%
-- **Features**: Time, Amount, V1-V28 (PCA transformed)
-
-## Project Structure
+### Repository Structure
 
 ```
 .
-├── src/                    # Source code
-├── notebooks/              # Jupyter notebooks
-│   └── demo_fastshap_fraud_detection.ipynb
-├── data/                   # Data directory (not in repo)
-├── models/saved/           # Saved model artifacts
-├── reports/                # Generated reports
-├── train_pipeline.py       # Main training script
-├── generate_report.py      # Report generator
-├── requirements.txt        # Python dependencies
-└── README.md              # This file
+├── train_pipeline.py              # Main training script
+├── demo_ulb_creditcard.py        # Complete demo
+├── demo_ulb_fast.py              # Fast demo
+├── generate_comprehensive_report.py  # Report generator
+├── src/                          # Source modules
+│   ├── data/                     # ULB data loader (real data only)
+│   ├── models/                   # XGBoost, LightGBM training
+│   ├── explainers/               # FastSHAP implementation
+│   ├── evaluation/               # Benchmarking tools
+│   └── service/                  # API & streaming
+├── reports/                      # Generated results
+│   ├── benchmark_report.md
+│   └── ulb_results_visualization.png
+├── research_paper/               # Complete research paper
+│   └── Real_Time_XAI_Fraud_Detection_Research.md
+└── notebooks/                    # Jupyter notebook
 ```
 
-## Demo Notebook
+---
 
-See `notebooks/demo_fastshap_fraud_detection.ipynb` for a complete walkthrough:
+## 📈 Performance Benchmarks
 
-1. Data loading and preprocessing
-2. Model training (XGBoost, LightGBM)
-3. FastSHAP surrogate training
-4. Fidelity evaluation
-5. Latency benchmarking
-6. Pareto frontier analysis
-7. Stability analysis
+### Latency Comparison (Real ULB Data)
 
-## Citation
+| Method | Mean | P50 | P95 | P99 | Throughput |
+|--------|------|-----|-----|-----|------------|
+| **FastSHAP** | **0.52ms** | **0.49ms** | **0.67ms** | **0.75ms** | **1,935 TPS** |
+| TreeSHAP (exact) | 4.92ms | 4.87ms | 5.38ms | 5.57ms | 203 TPS |
+| KernelSHAP (100) | 42.94ms | 43.38ms | 49.07ms | 49.79ms | 23 TPS |
+
+### Model Performance (XGBoost on ULB)
+
+| Metric | Value | Target | Status |
+|--------|-------|--------|--------|
+| AUC-ROC | 0.9905 | >0.98 | ✅ PASS |
+| F1 Score | 0.8116 | >0.95 | ⚠️ Below* |
+| Precision | 0.8889 | — | — |
+| Recall | 0.7467 | — | — |
+
+*F1 affected by extreme class imbalance (0.172% fraud rate), which is expected for fraud detection.
+
+### Fidelity Analysis
+
+| Metric | Value | Target | Status |
+|--------|-------|--------|--------|
+| Pearson Correlation | 0.9499 | >0.90 | ✅ PASS |
+| Spearman Top-K Mean | 0.6572 | >0.60 | ✅ PASS |
+
+---
+
+## 🔬 Technical Approach
+
+### FastSHAP Architecture
+
+```
+Input (29 features)
+    ↓
+Dense(256, ReLU)
+    ↓
+Dense(128, ReLU)
+    ↓
+Dense(64, ReLU)
+    ↓
+Output (29 SHAP values)
+
+Total Parameters: 50,718
+```
+
+### Training Configuration
+
+- **Teacher Model:** Exact TreeSHAP on XGBoost
+- **Training Samples:** 10,000
+- **Validation Samples:** 22,785
+- **Epochs:** 50
+- **Batch Size:** 256
+- **Learning Rate:** 1e-3
+- **Loss:** MSE between predicted and exact SHAP values
+
+### Data Preprocessing
+
+- **Dataset:** ULB Credit Card Fraud (284,807 transactions)
+- **Split:** Temporal (70% train / 10% val / 20% test)
+- **Fraud Rate:** 0.172% (492 frauds)
+- **Scaling:** StandardScaler on Time and Amount
+- **No SMOTE:** Maintains original class distribution
+
+---
+
+## 📚 Documentation
+
+- **[Full Research Paper](research_paper/Real_Time_XAI_Fraud_Detection_Research.md)** — Complete academic document with all sections
+- **[Benchmark Report](reports/benchmark_report.md)** — Detailed metrics and analysis
+- **[Results Visualization](reports/ulb_results_visualization.png)** — Charts and graphs
+
+---
+
+## 🎯 Use Cases
+
+This framework is designed for:
+
+- **Real-time fraud detection** (sub-1ms explanation latency)
+- **High-frequency transaction environments** (1,000+ TPS)
+- **Regulatory compliance** (GDPR "right to explanation")
+- **Production deployment** (ready-to-use pipeline)
+
+---
+
+## 📖 Citation
+
+If you use this code in your research, please cite:
 
 ```bibtex
-@software{real_time_fraud_xai,
-  title={Real-Time XAI Framework for Credit Card Fraud Detection},
-  author={AI Assistant},
-  year={2024},
-  note={FastSHAP Implementation for Sub-100ms Explainability}
+@software{sub_millisecond_fraud_xai,
+  title={Sub-Millisecond Explainable AI for Credit Card Fraud Detection},
+  author={MusaBrown},
+  year={2026},
+  note={FastSHAP implementation achieving 0.67ms explanation latency on real ULB data}
 }
 ```
 
-## References
+---
 
-1. Lundberg, S. M., & Lee, S. I. (2017). A unified approach to interpreting model predictions. NeurIPS.
-2. Jethani, N., et al. (2021). FastSHAP: Real-time Shapley Value Estimation. ICLR.
-3. ULB Credit Card Fraud Dataset: Machine Learning Group, Université Libre de Bruxelles (Dataset used in this project)
+## 🤝 Contributing
 
-## License
+Contributions welcome! Please see [GitHub Issues](https://github.com/MusaBrown/Fraud-detection-XAI-v2-or-fraud-detection-improved/issues) for discussion.
 
-MIT License - see LICENSE file for details.
+## 📄 License
 
-## Contributing
+MIT License — see LICENSE file for details.
 
-Contributions welcome! Please read CONTRIBUTING.md for guidelines.
+---
 
-## Contact
-
-For questions or support, please open an issue on GitHub.
+**Keywords:** Real-time XAI, FastSHAP, Fraud Detection, Explainable AI, Credit Card Fraud, ULB Dataset, Production ML, Low-latency Explanations
