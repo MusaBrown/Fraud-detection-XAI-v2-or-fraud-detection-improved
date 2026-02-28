@@ -1,0 +1,10 @@
+{
+  "fraud": {
+    "n_samples": 75,
+    "fidelity": 0.877613365650177,
+    "per_sample_fidelity_mean": 0.9273521900177002,
+    "per_sample_fidelity_std": 0.08479437232017517,
+    "top_features": [
+      [
+        "V14",
+        

@@ -1,0 +1,14 @@
+{
+  "Small [128, 64]": {
+    "error": "'FastSHAPExplainer' object has no attribute 'model'"
+  },
+  "Medium [256, 128, 64]": {
+    "error": "'FastSHAPExplainer' object has no attribute 'model'"
+  },
+  "Large [512, 256, 128]": {
+    "error": "'FastSHAPExplainer' object has no attribute 'model'"
+  },
+  "Deep [256, 128, 64, 32]": {
+    "error": "'FastSHAPExplainer' object has no attribute 'model'"
+  }
+}
