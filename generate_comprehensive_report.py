@@ -220,7 +220,7 @@ def generate_visualizations(results, output_path='reports/ulb_results_visualizat
     ax1 = fig.add_subplot(gs[0, :2])
     methods = latency_df['method'].tolist()
     p95_values = latency_df['p95_ms'].tolist()
-    colors = ['#2ecc71', '#3498db', '#e74c3c']
+    colors = ['#2ecc71', '#3498db', '#e74c3c', '#9b59b6']  # Green, Blue, Red, Purple
     
     bars = ax1.bar(methods, p95_values, color=colors, edgecolor='black', linewidth=1.5)
     ax1.axhline(y=50, color='red', linestyle='--', linewidth=2, label='Target: 50ms')

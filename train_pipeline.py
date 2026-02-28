@@ -152,12 +152,12 @@ def main():
     logger.info("STEP 4: TRAINING FASTSHAP")
     logger.info("=" * 80)
     
+    # Create TreeSHAP explainer (needed for benchmarking even if skipping training)
+    logger.info("Creating TreeSHAP teacher...")
+    tree_explainer = TreeSHAPExplainer(best_model.model, feature_names=feature_cols)
+    tree_explainer.fit()
+    
     if not args.skip_fastshap_training:
-        # Create TreeSHAP explainer as teacher
-        logger.info("Creating TreeSHAP teacher...")
-        tree_explainer = TreeSHAPExplainer(best_model.model, feature_names=feature_cols)
-        tree_explainer.fit()
-        
         # Train FastSHAP (convert to numpy for FastSHAP)
         logger.info("Training FastSHAP surrogate (this may take a while)...")
         X_train_np = X_train.values.astype(np.float32) if hasattr(X_train, 'values') else X_train
@@ -196,8 +196,9 @@ def main():
                 logger.info(f"  {metric}: {value:.4f}")
     else:
         logger.info("Loading existing FastSHAP...")
-        fastshap = FastSHAPExplainer(input_dim=len(feature_cols), feature_names=feature_cols)
+        fastshap = FastSHAPExplainer(input_dim=len(feature_cols))
         fastshap.load(output_dir / 'fastshap_model.pt')
+        fastshap.feature_names = feature_cols
     
     # =========================================================================
     # 5. BENCHMARK LATENCY
@@ -266,6 +267,52 @@ def main():
         )
     except Exception as e:
         logger.warning(f"KernelSHAP benchmarking failed: {e}")
+    
+    # Benchmark LIME
+    logger.info("Benchmarking LIME...")
+    from src.explainers.lime_optimized import OptimizedLIME
+    
+    try:
+        # Initialize LIME with training data (convert to numpy)
+        X_train_np_lime = X_train[:500].values if hasattr(X_train[:500], 'values') else X_train[:500]
+        lime_explainer = OptimizedLIME(
+            training_data=X_train_np_lime,
+            feature_names=feature_cols,
+            n_samples=1000,
+            kernel_width=0.75
+        )
+        
+        def lime_fn(X):
+            if X.ndim == 1:
+                X = X.reshape(1, -1)
+            shap_like = np.zeros((X.shape[0], len(feature_cols)))
+            for i in range(X.shape[0]):
+                # LIME expects predict_proba that returns (n_samples, n_classes)
+                def lime_predict_fn(x):
+                    probas = best_model.model.predict_proba(x)
+                    # Return both class probabilities
+                    return np.column_stack([1 - probas, probas])
+                
+                result = lime_explainer.explain(
+                    instance=X[i],
+                    predict_fn=lime_predict_fn,
+                    num_features=len(feature_cols),
+                    num_samples=1000
+                )
+                shap_like[i] = result['shap_like_values']
+            return {'shap_values': shap_like}
+        
+        benchmark.benchmark_method(
+            "LIME (n_samples=1000)",
+            lime_fn,
+            X_benchmark,
+            n_samples=5,  # LIME is slow, fewer samples
+            batch_mode=False
+        )
+    except Exception as e:
+        logger.warning(f"LIME benchmarking failed: {e}")
+        import traceback
+        logger.warning(traceback.format_exc())
     
     # Print results
     logger.info("\n" + benchmark.generate_report())

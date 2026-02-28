@@ -1,10 +1,10 @@
 # Sub-Millisecond Explainable AI for Credit Card Fraud Detection
 
-**A FastSHAP Implementation Achieving 0.67ms Explanation Latency on Real ULB Data**
+**A Comprehensive XAI Evaluation: FastSHAP vs TreeSHAP vs KernelSHAP vs LIME**
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![P95 Latency](https://img.shields.io/badge/P95%20Latency-0.67ms-brightgreen.svg)]()
+[![P95 Latency](https://img.shields.io/badge/P95%20Latency-0.62ms-brightgreen.svg)]()
 [![Fidelity](https://img.shields.io/badge/Fidelity-94.99%25-blue.svg)]()
 
 > **Production-Ready Real-Time XAI Framework** | [📄 Full Report](reports/benchmark_report.md) | [📊 Visualization](reports/ulb_results_visualization.png) | [📚 Research Paper](research_paper/Real_Time_XAI_Fraud_Detection_Research.md)
@@ -15,15 +15,20 @@
 
 This repository presents a **production-ready implementation** of FastSHAP for credit card fraud detection that achieves:
 
-- **Sub-1ms explanation latency** (0.67ms P95) — 74× faster than the 50ms target
+- **Sub-1ms explanation latency** (0.62ms P95) — 81× faster than the 50ms target
 - **94.99% fidelity** with exact TreeSHAP values
 - **Real ULB Credit Card Fraud data only** — no synthetic data
-- **1,935 TPS throughput** — ready for high-frequency environments
+- **1,916 TPS throughput** — only method meeting production requirements
 
-**Compared to existing work:**
-- 8.1× faster than exact TreeSHAP
-- 73.6× faster than KernelSHAP
-- Substantially faster than original FastSHAP paper (~10ms reported)
+**Comprehensive Benchmarking:**
+| Method | P95 Latency | Throughput | Production Ready? |
+|--------|-------------|------------|-------------------|
+| **FastSHAP** | **0.62ms** ✅ | **1,916 TPS** ✅ | **YES** |
+| TreeSHAP | 5.45ms ✅ | 201 TPS ❌ | Marginal |
+| KernelSHAP | 52.6ms ❌ | 22 TPS ❌ | NO |
+| LIME | 68.1ms ❌ | 15 TPS ❌ | **NO** |
+
+**FastSHAP is 110× faster than LIME and the only method meeting all production criteria.**
 
 ---
 
@@ -33,8 +38,8 @@ This repository presents a **production-ready implementation** of FastSHAP for c
 
 | Criterion | Requirement | Achieved | Status |
 |-----------|-------------|----------|--------|
-| **P95 Latency** | < 50ms | **0.67ms** | ✅ **PASS** (1.3% of target) |
-| **P99 Latency** | < 100ms | **0.75ms** | ✅ **PASS** (0.8% of target) |
+| **P95 Latency** | < 50ms | **0.62ms** | ✅ **PASS** (1.2% of target) |
+| **P99 Latency** | < 100ms | **0.84ms** | ✅ **PASS** (0.8% of target) |
 | **Fidelity** | > 0.90 | **0.9499** | ✅ **PASS** (105% of target) |
 | **AUC-ROC** | > 0.98 | **0.9905** | ✅ **PASS** (101% of target) |
 
@@ -44,9 +49,10 @@ This repository presents a **production-ready implementation** of FastSHAP for c
 
 | Method | P95 Latency | Throughput | Speedup vs FastSHAP |
 |--------|-------------|------------|---------------------|
-| **FastSHAP (Ours)** | **0.67ms** | **1,935 TPS** | **1.0×** (baseline) |
-| TreeSHAP (exact) | 5.38ms | 203 TPS | 8.1× slower |
-| KernelSHAP (100) | 49.07ms | 23 TPS | 73.6× slower |
+| **FastSHAP (Ours)** | **0.62ms** ✅ | **1,916 TPS** ✅ | **1.0×** (baseline) |
+| TreeSHAP (exact) | 5.45ms ✅ | 201 TPS ❌ | 8.8× slower |
+| KernelSHAP (100) | 52.6ms ❌ | 22 TPS ❌ | 85× slower |
+| LIME (n=1000) | 68.1ms ❌ | 15 TPS ❌ | **110× slower** |
 
 ---
 

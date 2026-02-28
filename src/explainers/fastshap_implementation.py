@@ -425,7 +425,7 @@ class FastSHAPExplainer:
     
     def load(self, path: str):
         """Load FastSHAP model."""
-        checkpoint = torch.load(path, map_location=self.device)
+        checkpoint = torch.load(path, map_location=self.device, weights_only=False)
         
         self.input_dim = checkpoint['input_dim']
         self.hidden_dims = checkpoint['hidden_dims']

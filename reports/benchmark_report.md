@@ -1,7 +1,7 @@
 # Real-Time XAI for Credit Card Fraud Detection
 ## Comprehensive Benchmark Report
 
-**Generated:** 2026-02-28 14:41:08
+**Generated:** 2026-02-28 15:37:33
 
 ---
 
@@ -26,13 +26,13 @@ for credit card fraud detection using the **ULB Credit Card Fraud Dataset**.
 
 ### FastSHAP Performance (Our Method)
 
-- **P95 Latency:** 0.67ms (Target: <50ms: ✅ PASS) |
-  **1.3% of target**
+- **P95 Latency:** 0.62ms (Target: <50ms: ✅ PASS) |
+  **1.2% of target**
 
-- **P99 Latency:** 0.75ms (Target: <100ms: ✅ PASS) |
+- **P99 Latency:** 0.84ms (Target: <100ms: ✅ PASS) |
   **0.8% of target**
 
-- **Throughput:** 1935 TPS
+- **Throughput:** 1916 TPS
 
 - **Fidelity (Pearson):** 0.9499 (Target: >0.90: ✅ PASS)
 
@@ -42,14 +42,14 @@ for credit card fraud detection using the **ULB Credit Card Fraud Dataset**.
 
 | Method | P50 (ms) | P95 (ms) | P99 (ms) | Throughput (TPS) |
 |--------|----------|----------|----------|------------------|
-| **FastSHAP** | 0.49 | **0.67** | 0.75 | **1935** |
-| TreeSHAP (exact) | 4.87 | 5.38 | 5.57 | 203 |
-| KernelSHAP (100) | 43.38 | 49.07 | 49.79 | 23 |
+| **FastSHAP** | 0.51 | **0.62** | 0.84 | **1916** |
+| TreeSHAP (exact) | 5.01 | 5.45 | 5.51 | 201 |
+| KernelSHAP (100) | 47.34 | 52.62 | 52.66 | 22 |
 
 ### Key Observations:
 
-1. **FastSHAP is 8.1x faster** than TreeSHAP (exact)
-2. **FastSHAP is 73.6x faster** than KernelSHAP
+1. **FastSHAP is 8.8x faster** than TreeSHAP (exact)
+2. **FastSHAP is 85.5x faster** than KernelSHAP
 3. **FastSHAP achieves 9.5x higher throughput** than TreeSHAP
 
 ---
@@ -85,8 +85,8 @@ FastSHAP is trained to approximate exact TreeSHAP values using a neural surrogat
 
 | Criterion | Requirement | Achieved | Status |
 |-----------|-------------|----------|--------|
-| P95 Latency | < 50ms | 0.67ms | ✅ PASS |
-| P99 Latency | < 100ms | 0.75ms | ✅ PASS |
+| P95 Latency | < 50ms | 0.62ms | ✅ PASS |
+| P99 Latency | < 100ms | 0.84ms | ✅ PASS |
 | Fidelity | > 0.90 | 0.9499 | PASS |
 | AUC-ROC | > 0.98 | 0.9905 | PASS |
 
