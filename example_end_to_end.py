@@ -5,7 +5,8 @@ import logging
 import numpy as np
 import pandas as pd
 
-from src.data.load_datasets import IEEECISLoader, temporal_split
+# NOTE: This example was NOT used in the project. Only ULB data was used.
+from src.data.load_datasets import ULBLoader, temporal_split
 from src.data.preprocessing import FraudDataPreprocessor
 from src.models.train_models import FraudModelTrainer
 from src.explainers.baseline_shap import TreeSHAPExplainer
@@ -25,7 +26,7 @@ def main():
     # 1. Load Data
     # =========================================================================
     logger.info("\n[1/6] Loading synthetic data...")
-    loader = IEEECISLoader()
+    loader = ULBLoader()
     df = loader._create_synthetic_data(n_samples=10000, n_features=30)
     
     # =========================================================================

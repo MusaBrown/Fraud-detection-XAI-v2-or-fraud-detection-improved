@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import joblib
 
-from src.data.load_datasets import IEEECISLoader, ULBLoader, temporal_split, get_feature_columns
+from src.data.load_datasets import ULBLoader, temporal_split, get_feature_columns
 from src.data.preprocessing import FraudDataPreprocessor, ClassBalancer
 from src.models.train_models import train_multiple_models, EnsembleFraudDetector, FraudModelTrainer
 from src.explainers.baseline_shap import TreeSHAPExplainer, KernelSHAPExplainer, benchmark_shap_methods
@@ -27,8 +27,8 @@ logger = logging.getLogger(__name__)
 
 def main():
     parser = argparse.ArgumentParser(description='Train Real-Time XAI Fraud Detection System')
-    parser.add_argument('--dataset', type=str, default='synthetic', choices=['ieee', 'ulb', 'synthetic'],
-                       help='Dataset to use')
+    parser.add_argument('--dataset', type=str, default='ulb', choices=['ulb', 'synthetic'],
+                       help='Dataset to use (Note: Only ULB data was used in this project)')
     parser.add_argument('--use-sample', action='store_true',
                        help='Use sample of data for faster training')
     parser.add_argument('--sample-frac', type=float, default=0.1,
@@ -52,16 +52,13 @@ def main():
     logger.info("STEP 1: LOADING DATA")
     logger.info("=" * 80)
     
-    if args.dataset == 'ieee':
-        loader = IEEECISLoader()
-        df = loader.load(use_sample=args.use_sample, sample_frac=args.sample_frac)
-    elif args.dataset == 'ulb':
+    if args.dataset == 'ulb':
         loader = ULBLoader()
         df = loader.load()
     else:
-        logger.info("Using synthetic data...")
-        loader = IEEECISLoader()
-        df = loader._create_synthetic_data(n_samples=50000, n_features=50)
+        logger.info("Using synthetic ULB-like data...")
+        from src.data.load_datasets import create_synthetic_ulb_data
+        df = create_synthetic_ulb_data(n_samples=50000)
     
     # =========================================================================
     # 2. PREPROCESSING

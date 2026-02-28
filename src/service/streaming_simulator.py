@@ -156,7 +156,7 @@ class StreamingSimulator:
         
     def _generate_transaction(self) -> Dict:
         """Generate a synthetic transaction for testing."""
-        # Generate features similar to IEEE-CIS
+        # Generate features similar to ULB dataset
         tx = {
             'TransactionAmt': np.random.lognormal(4, 1.5),
             'card1': np.random.randint(1000, 20000),

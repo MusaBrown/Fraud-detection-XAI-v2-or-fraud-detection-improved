@@ -11,6 +11,7 @@ def download_ieee_cis():
     data_dir = Path("data/raw")
     data_dir.mkdir(parents=True, exist_ok=True)
     
+    print("WARNING: IEEE-CIS data was NOT used in this project.")
     print("Downloading IEEE-CIS Fraud Detection dataset from Kaggle...")
     print("Note: This requires Kaggle API credentials.")
     print("File size: ~1.5 GB")

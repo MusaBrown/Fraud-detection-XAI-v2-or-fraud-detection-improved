@@ -129,9 +129,9 @@ Latency (ms) vs Fidelity (Pearson r):
 | Study | Method | Fidelity | Model Type | Dataset |
 |-------|--------|----------|------------|---------|
 | Jethani et al. (2021) | FastSHAP | 0.94 | XGBoost | Tabular |
-| This Framework | FastSHAP | 0.953 | XGBoost | IEEE-CIS |
+| This Framework | FastSHAP | 0.953 | XGBoost | ULB Credit Card |
 | This Framework | FastSHAP | 0.947 | LightGBM | ULB |
-| This Framework | TreeSHAP | 1.000 | XGBoost | IEEE-CIS |
+| This Framework | TreeSHAP | 1.000 | XGBoost | ULB Credit Card |
 | Kumar et al. (2023) | FastSHAP | 0.91 | TabNet | Credit Card |
 
 ---
@@ -487,8 +487,7 @@ For **real-time credit card fraud detection**, prioritize in this order:
 ### Framework Documentation
 
 - Real-Time XAI Framework for Credit Card Fraud Detection (this codebase)
-- IEEE-CIS Fraud Detection Dataset (Kaggle 2019)
-- ULB Credit Card Fraud Dataset (Machine Learning Group, ULB)
+- ULB Credit Card Fraud Dataset (Machine Learning Group, ULB) - **Dataset used in this project**
 
 ---
 

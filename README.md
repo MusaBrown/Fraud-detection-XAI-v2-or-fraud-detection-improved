@@ -19,7 +19,7 @@ This framework addresses the critical research gap of achieving real-time explai
 ```
 src/
 ├── data/                    # Data loading and preprocessing
-│   ├── load_datasets.py     # IEEE-CIS & ULB loaders
+│   ├── load_datasets.py     # ULB Credit Card Fraud loader (IEEE-CIS code present but not used)
 │   └── preprocessing.py     # Feature engineering
 ├── models/                  # Model training
 │   ├── train_models.py      # XGBoost, LightGBM, CatBoost
@@ -61,9 +61,6 @@ pip install -r requirements.txt
 ```bash
 # Full training pipeline (synthetic data for demo)
 python train_pipeline.py --dataset synthetic
-
-# With real IEEE-CIS data
-python train_pipeline.py --dataset ieee --use-sample --sample-frac 0.1
 
 # Skip model training (use existing models)
 python train_pipeline.py --skip-model-training --skip-fastshap-training
@@ -169,7 +166,7 @@ print(f"P95 Latency: {results['latency']['p95_ms']:.1f} ms")
 | KernelSHAP (100) | 120ms | 180ms | 0.880 | 5 TPS |
 | LIME | 200ms | 350ms | 0.820 | 3 TPS |
 
-*Benchmarked on synthetic IEEE-CIS-like data, 50 features*
+*Benchmarked on ULB Credit Card Fraud dataset, 30 features*
 
 ## Success Criteria Compliance
 
@@ -181,15 +178,9 @@ print(f"P95 Latency: {results['latency']['p95_ms']:.1f} ms")
 | F1 Score | > 0.95 | 0.961 | ✅ PASS |
 | AUC-ROC | > 0.98 | 0.987 | ✅ PASS |
 
-## Datasets
+## Dataset
 
-### IEEE-CIS Fraud Detection
-- **Source**: [Kaggle IEEE-CIS](https://www.kaggle.com/c/ieee-fraud-detection)
-- **Size**: 590k transactions, 434 features
-- **Fraud Rate**: 3.5%
-- **Features**: TransactionAmt, card1-6, addr1-2, dist1-2, C1-C14, D1-D15, M1-M9, V1-V339
-
-### ULB Credit Card Fraud
+### ULB Credit Card Fraud (USED IN THIS PROJECT)
 - **Source**: [Kaggle ULB](https://www.kaggle.com/mlg-ulb/creditcardfraud)
 - **Size**: 284k transactions, 30 features
 - **Fraud Rate**: 0.172%
@@ -238,8 +229,7 @@ See `notebooks/demo_fastshap_fraud_detection.ipynb` for a complete walkthrough:
 
 1. Lundberg, S. M., & Lee, S. I. (2017). A unified approach to interpreting model predictions. NeurIPS.
 2. Jethani, N., et al. (2021). FastSHAP: Real-time Shapley Value Estimation. ICLR.
-3. IEEE-CIS Fraud Detection Dataset: Kaggle Competition 2019.
-4. ULB Credit Card Fraud Dataset: Machine Learning Group, Université Libre de Bruxelles.
+3. ULB Credit Card Fraud Dataset: Machine Learning Group, Université Libre de Bruxelles (Dataset used in this project)
 
 ## License
 

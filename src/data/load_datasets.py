@@ -1,5 +1,9 @@
 """
-Dataset loaders for IEEE-CIS and ULB Credit Card Fraud Detection datasets.
+Dataset loaders for ULB Credit Card Fraud Detection dataset.
+
+NOTE: This project ONLY uses the ULB Credit Card Fraud dataset.
+IEEE-CIS loader code is present for reference but was NOT used in this research.
+
 Implements temporal train-test splits to avoid data leakage.
 """
 import os
@@ -18,6 +22,10 @@ logger = logging.getLogger(__name__)
 class IEEECISLoader:
     """
     Loader for IEEE-CIS Fraud Detection dataset.
+    
+    NOTE: This class is NOT used in this project. Only ULB data was used.
+    Kept for reference purposes only.
+    
     Expected files: train_transaction.csv, train_identity.csv, 
                     test_transaction.csv, test_identity.csv
     """
@@ -232,3 +240,46 @@ def get_feature_columns(df: pd.DataFrame, target_col: str = 'isFraud', id_col: s
     """Get list of feature columns (excluding target and ID)."""
     exclude_cols = [target_col, id_col]
     return [col for col in df.columns if col not in exclude_cols]
+
+
+def create_synthetic_ulb_data(n_samples: int = 284807) -> pd.DataFrame:
+    """
+    Create synthetic ULB-like data for testing.
+    
+    NOTE: This function creates synthetic data mimicking ULB Credit Card dataset,
+    which is the ONLY dataset used in this project.
+    
+    Args:
+        n_samples: Number of samples to generate
+        
+    Returns:
+        DataFrame with synthetic ULB-like data
+    """
+    logger.info(f"Creating synthetic ULB dataset: {n_samples} samples")
+    
+    np.random.seed(42)
+    
+    data = {
+        'TransactionDT': np.cumsum(np.random.exponential(10, n_samples)),
+        'TransactionAmt': np.random.lognormal(3, 1, n_samples),
+        'isFraud': np.random.choice([0, 1], n_samples, p=[0.99828, 0.00172]),
+    }
+    
+    # V features (PCA components)
+    for i in range(1, 29):
+        data[f'V{i}'] = np.random.normal(0, 1, n_samples)
+    
+    df = pd.DataFrame(data)
+    
+    # Rename for consistency with ULB format
+    df = df.rename(columns={'TransactionDT': 'Time', 'TransactionAmt': 'Amount'})
+    
+    # Add fraud patterns
+    fraud_indices = df[df['isFraud'] == 1].index
+    df.loc[fraud_indices, 'Amount'] *= np.random.uniform(2, 10, len(fraud_indices))
+    df.loc[fraud_indices, 'V1'] += np.random.normal(3, 1, len(fraud_indices))
+    df.loc[fraud_indices, 'V2'] -= np.random.normal(2, 1, len(fraud_indices))
+    df.loc[fraud_indices, 'V3'] += np.random.normal(2, 0.5, len(fraud_indices))
+    
+    logger.info(f"Created synthetic ULB data: {len(df)} transactions, fraud rate: {df['isFraud'].mean():.6f}")
+    return df
