@@ -91,7 +91,7 @@ def run_ablation_study():
             training_time = time.time() - start_time
             
             # Evaluate
-            n_params = sum(p.numel() for p in fastshap.model.parameters())
+            n_params = sum(p.numel() for p in fastshap.surrogate.parameters())
             
             # Compute fidelity on test set
             test_sample = X_test[:500]

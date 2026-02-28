@@ -327,13 +327,13 @@ class ComprehensiveBenchmark:
         def convert_to_python(obj):
             if isinstance(obj, np.ndarray):
                 return obj.tolist()
-            elif isinstance(obj, (np.float32, np.float64)):
+            elif isinstance(obj, (np.floating, np.float32, np.float64)):
                 return float(obj)
-            elif isinstance(obj, (np.int32, np.int64)):
+            elif isinstance(obj, (np.integer, np.int32, np.int64)):
                 return int(obj)
             elif isinstance(obj, dict):
                 return {k: convert_to_python(v) for k, v in obj.items()}
-            elif isinstance(obj, list):
+            elif isinstance(obj, (list, tuple)):
                 return [convert_to_python(item) for item in obj]
             return obj
         

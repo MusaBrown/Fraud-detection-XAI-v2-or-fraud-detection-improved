@@ -1,14 +1,50 @@
 {
   "Small [128, 64]": {
-    "error": "'FastSHAPExplainer' object has no attribute 'model'"
+    "architecture": [
+      128,
+      64
+    ],
+    "n_parameters": 13982,
+    "training_time_sec": 7.173460960388184,
+    "fidelity": 0.8883161544799805,
+    "latency_mean_ms": 0.3406715393066406,
+    "latency_p95_ms": 0.4021644592285156
   },
   "Medium [256, 128, 64]": {
-    "error": "'FastSHAPExplainer' object has no attribute 'model'"
+    "architecture": [
+      256,
+      128,
+      64
+    ],
+    "n_parameters": 50718,
+    "training_time_sec": 7.0785112380981445,
+    "fidelity": 0.8923879861831665,
+    "latency_mean_ms": 0.5514717102050781,
+    "latency_p95_ms": 0.6866693496704102
   },
   "Large [512, 256, 128]": {
-    "error": "'FastSHAPExplainer' object has no attribute 'model'"
+    "architecture": [
+      512,
+      256,
+      128
+    ],
+    "n_parameters": 183326,
+    "training_time_sec": 9.172421216964722,
+    "fidelity": 0.9056611061096191,
+    "latency_mean_ms": 0.4167604446411133,
+    "latency_p95_ms": 0.5386590957641602
   },
   "Deep [256, 128, 64, 32]": {
-    "error": "'FastSHAPExplainer' object has no attribute 'model'"
+    "architecture": [
+      256,
+      128,
+      64,
+      32
+    ],
+    "n_parameters": 51870,
+    "training_time_sec": 7.757624864578247,
+    "fidelity": 0.8877807855606079,
+    "latency_mean_ms": 0.6293392181396484,
+    "latency_p95_ms": 0.7822513580322263
   }
 }
