@@ -125,26 +125,24 @@ class FraudModelTrainer:
         fit_params = {}
         
         if self.model_type == 'xgboost':
-            fit_params = {
-                'eval_set': [(X_train, y_train)] if X_val is None else [(X_val, y_val)],
-                'early_stopping_rounds': early_stopping_rounds,
-                'verbose': False
-            }
+            # For XGBoost 2.0+, use simplified parameters
+            fit_params = {}
+            if X_val is not None:
+                fit_params['eval_set'] = [(X_val, y_val)]
             
         elif self.model_type == 'lightgbm':
-            fit_params = {
-                'eval_set': [(X_val, y_val)] if X_val is not None else None,
-                'early_stopping_rounds': early_stopping_rounds if X_val is not None else None,
-                'verbose': False
-            }
+            # Simplified parameters for newer LightGBM versions
+            fit_params = {}
+            if X_val is not None:
+                fit_params['eval_set'] = [(X_val, y_val)]
             
         elif self.model_type == 'catboost':
-            fit_params = {
-                'eval_set': (X_val, y_val) if X_val is not None else None,
-                'early_stopping_rounds': early_stopping_rounds if X_val is not None else None,
-                'verbose': False,
-                'cat_features': categorical_features if categorical_features else []
-            }
+            # Simplified parameters for newer CatBoost versions
+            fit_params = {}
+            if X_val is not None:
+                fit_params['eval_set'] = (X_val, y_val)
+            if categorical_features:
+                fit_params['cat_features'] = categorical_features
         
         logger.info(f"Training {self.model_type} model...")
         self.model.fit(X_train, y_train, **fit_params)

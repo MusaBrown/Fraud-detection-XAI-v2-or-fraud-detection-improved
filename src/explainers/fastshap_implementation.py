@@ -206,8 +206,7 @@ class FastSHAPExplainer:
             optimizer,
             mode='min',
             factor=0.5,
-            patience=self.patience // 2,
-            verbose=True
+            patience=self.patience // 2
         )
         
         best_val_loss = float('inf')

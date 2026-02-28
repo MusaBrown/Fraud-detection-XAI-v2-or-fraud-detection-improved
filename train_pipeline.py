@@ -1,10 +1,16 @@
 """
 Main training pipeline for Real-Time XAI Fraud Detection System.
 Trains models, FastSHAP surrogate, and evaluates all components.
+
+IMPORTANT: This pipeline ONLY works with real ULB Credit Card Fraud data.
+NO synthetic data is used. Download the dataset before running.
+
+Dataset: https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud
 """
 import logging
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -26,13 +32,9 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Train Real-Time XAI Fraud Detection System')
-    parser.add_argument('--dataset', type=str, default='ulb', choices=['ulb', 'synthetic'],
-                       help='Dataset to use (Note: Only ULB data was used in this project)')
-    parser.add_argument('--use-sample', action='store_true',
-                       help='Use sample of data for faster training')
-    parser.add_argument('--sample-frac', type=float, default=0.1,
-                       help='Fraction of data to sample')
+    parser = argparse.ArgumentParser(
+        description='Train Real-Time XAI Fraud Detection System (Real ULB Data Only)'
+    )
     parser.add_argument('--output-dir', type=str, default='models/saved',
                        help='Output directory for saved models')
     parser.add_argument('--skip-model-training', action='store_true',
@@ -49,16 +51,25 @@ def main():
     # 1. LOAD DATA
     # =========================================================================
     logger.info("=" * 80)
-    logger.info("STEP 1: LOADING DATA")
+    logger.info("STEP 1: LOADING ULB CREDIT CARD FRAUD DATASET")
     logger.info("=" * 80)
     
-    if args.dataset == 'ulb':
+    try:
         loader = ULBLoader()
         df = loader.load()
-    else:
-        logger.info("Using synthetic ULB-like data...")
-        from src.data.load_datasets import create_synthetic_ulb_data
-        df = create_synthetic_ulb_data(n_samples=50000)
+    except FileNotFoundError as e:
+        logger.error(str(e))
+        logger.error("\n" + "=" * 80)
+        logger.error("CANNOT RUN PIPELINE WITHOUT REAL DATA")
+        logger.error("=" * 80)
+        logger.error("\nThis pipeline ONLY works with real ULB Credit Card Fraud data.")
+        logger.error("No synthetic data fallback is available.\n")
+        logger.error("To download the dataset:")
+        logger.error("  python download_ulb_data.py")
+        logger.error("\nOr download manually from:")
+        logger.error("  https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud")
+        logger.error("and place creditcard.csv in data/raw/")
+        sys.exit(1)
     
     # =========================================================================
     # 2. PREPROCESSING
@@ -74,8 +85,8 @@ def main():
         reduce_memory=True
     )
     
-    # Temporal split
-    train_df, val_df, test_df = temporal_split(df, test_size=0.2, val_size=0.1)
+    # Temporal split (ULB uses 'Time' column)
+    train_df, val_df, test_df = temporal_split(df, time_col='Time', test_size=0.2, val_size=0.1)
     
     # Fit preprocessor on training data
     logger.info("Fitting preprocessor...")
@@ -86,15 +97,15 @@ def main():
     # Save preprocessor
     preprocessor.save(output_dir / 'preprocessor.joblib')
     
-    # Prepare features
-    feature_cols = [c for c in train_processed.columns if c not in ['isFraud', 'TransactionID', 'TransactionDT']]
+    # Prepare features (keep as DataFrames for model training)
+    feature_cols = [c for c in train_processed.columns if c not in ['isFraud', 'Time']]
     
-    X_train = train_processed[feature_cols].values.astype(np.float32)
-    y_train = train_processed['isFraud'].values
-    X_val = val_processed[feature_cols].values.astype(np.float32)
-    y_val = val_processed['isFraud'].values
-    X_test = test_processed[feature_cols].values.astype(np.float32)
-    y_test = test_processed['isFraud'].values
+    X_train = train_processed[feature_cols]
+    y_train = train_processed['isFraud']
+    X_val = val_processed[feature_cols]
+    y_val = val_processed['isFraud']
+    X_test = test_processed[feature_cols]
+    y_test = test_processed['isFraud']
     
     logger.info(f"Training samples: {len(X_train)}")
     logger.info(f"Validation samples: {len(X_val)}")
@@ -147,12 +158,15 @@ def main():
         tree_explainer = TreeSHAPExplainer(best_model.model, feature_names=feature_cols)
         tree_explainer.fit()
         
-        # Train FastSHAP
+        # Train FastSHAP (convert to numpy for FastSHAP)
         logger.info("Training FastSHAP surrogate (this may take a while)...")
+        X_train_np = X_train.values.astype(np.float32) if hasattr(X_train, 'values') else X_train
+        X_val_np = X_val.values.astype(np.float32) if hasattr(X_val, 'values') else X_val
+        
         fastshap = create_fastshap_from_model(
             model=best_model.model,
-            X_train=X_train,
-            X_val=X_val,
+            X_train=X_train_np,
+            X_val=X_val_np,
             tree_explainer=tree_explainer,
             hidden_dims=[256, 128, 64],
             learning_rate=1e-3,
@@ -167,13 +181,14 @@ def main():
         
         # Evaluate fidelity
         logger.info("\nEvaluating FastSHAP fidelity...")
-        n_test_samples = min(500, len(X_test))
-        test_indices = np.random.choice(len(X_test), n_test_samples, replace=False)
+        X_test_np = X_test.values.astype(np.float32) if hasattr(X_test, 'values') else X_test
+        n_test_samples = min(500, len(X_test_np))
+        test_indices = np.random.choice(len(X_test_np), n_test_samples, replace=False)
         
-        tree_result = tree_explainer.explain(X_test[test_indices])
+        tree_result = tree_explainer.explain(X_test_np[test_indices])
         true_shap = tree_result['shap_values']
         
-        fidelity = fastshap.compute_fidelity(X_test[test_indices], true_shap, top_k=10)
+        fidelity = fastshap.compute_fidelity(X_test_np[test_indices], true_shap, top_k=10)
         
         logger.info("FastSHAP Fidelity Metrics:")
         for metric, value in fidelity.items():
@@ -181,7 +196,7 @@ def main():
                 logger.info(f"  {metric}: {value:.4f}")
     else:
         logger.info("Loading existing FastSHAP...")
-        fastshap = FastSHAPExplainer(input_dim=len(feature_cols))
+        fastshap = FastSHAPExplainer(input_dim=len(feature_cols), feature_names=feature_cols)
         fastshap.load(output_dir / 'fastshap_model.pt')
     
     # =========================================================================
@@ -193,14 +208,21 @@ def main():
     
     benchmark = LatencyBenchmark(warmup_runs=5)
     
-    # Prepare explain functions
-    n_benchmark = min(100, len(X_test))
-    X_benchmark = X_test[:n_benchmark]
+    # Prepare explain functions (convert to numpy for benchmarking)
+    X_test_np = X_test.values.astype(np.float32) if hasattr(X_test, 'values') else X_test
+    n_benchmark = min(100, len(X_test_np))
+    X_benchmark = X_test_np[:n_benchmark]
     
     def tree_shap_fn(X):
+        # Ensure 2D array for single samples
+        if X.ndim == 1:
+            X = X.reshape(1, -1)
         return {'shap_values': tree_explainer.explain(X)['shap_values']}
     
     def fastshap_fn(X):
+        # Ensure 2D array for single samples
+        if X.ndim == 1:
+            X = X.reshape(1, -1)
         return {'shap_values': fastshap.explain(X)['shap_values']}
     
     # Benchmark TreeSHAP (exact)
@@ -284,7 +306,7 @@ def main():
     logger.info("=" * 80)
     
     config = {
-        'dataset': args.dataset,
+        'dataset': 'ulb_real',
         'n_features': len(feature_cols),
         'feature_names': feature_cols,
         'model_type': 'xgboost',
@@ -307,7 +329,7 @@ def main():
     
     # Print final summary
     logger.info("\n" + "=" * 80)
-    logger.info("FINAL SUMMARY")
+    logger.info("FINAL SUMMARY - REAL ULB DATA ONLY")
     logger.info("=" * 80)
     logger.info(f"Model saved: {output_dir / 'xgboost_model.joblib'}")
     logger.info(f"FastSHAP saved: {output_dir / 'fastshap_model.pt'}")

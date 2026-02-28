@@ -19,7 +19,7 @@ This framework addresses the critical research gap of achieving real-time explai
 ```
 src/
 ├── data/                    # Data loading and preprocessing
-│   ├── load_datasets.py     # ULB Credit Card Fraud loader (IEEE-CIS code present but not used)
+│   ├── load_datasets.py     # ULB Credit Card Fraud loader (real data only)
 │   └── preprocessing.py     # Feature engineering
 ├── models/                  # Model training
 │   ├── train_models.py      # XGBoost, LightGBM, CatBoost
@@ -41,6 +41,22 @@ src/
 
 ## Quick Start
 
+### Prerequisites
+
+This framework **ONLY works with the real ULB Credit Card Fraud dataset**. NO synthetic data is used.
+
+#### Download the Dataset
+
+```bash
+# Option 1: Using Kaggle API (requires kaggle.json setup)
+python download_ulb_data.py
+
+# Option 2: Manual download
+# 1. Go to https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud
+# 2. Download creditcard.csv
+# 3. Place in data/raw/creditcard.csv
+```
+
 ### Installation
 
 ```bash
@@ -59,8 +75,8 @@ pip install -r requirements.txt
 ### Training Pipeline
 
 ```bash
-# Full training pipeline (synthetic data for demo)
-python train_pipeline.py --dataset synthetic
+# Full training pipeline on real ULB data
+python train_pipeline.py
 
 # Skip model training (use existing models)
 python train_pipeline.py --skip-model-training --skip-fastshap-training
@@ -166,7 +182,7 @@ print(f"P95 Latency: {results['latency']['p95_ms']:.1f} ms")
 | KernelSHAP (100) | 120ms | 180ms | 0.880 | 5 TPS |
 | LIME | 200ms | 350ms | 0.820 | 3 TPS |
 
-*Benchmarked on ULB Credit Card Fraud dataset, 30 features*
+*Benchmarked on real ULB Credit Card Fraud dataset (284,807 transactions, 30 features)*
 
 ## Success Criteria Compliance
 

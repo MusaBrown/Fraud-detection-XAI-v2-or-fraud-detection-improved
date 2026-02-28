@@ -1,6 +1,13 @@
 """
 Fast ULB Credit Card Fraud Demo - Optimized for quick execution
+
+IMPORTANT: This demo requires the real ULB Credit Card Fraud dataset.
+NO synthetic data is used.
+
+Download: python download_ulb_data.py
+Or: https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud
 """
+import sys
 import numpy as np
 import pandas as pd
 import time
@@ -24,6 +31,20 @@ def main():
     # 1. Load Data
     logger.info("\n[1/5] Loading ULB dataset...")
     data_path = Path("data/raw/creditcard.csv")
+    
+    if not data_path.exists():
+        logger.error("=" * 80)
+        logger.error("ERROR: ULB Credit Card Fraud dataset not found!")
+        logger.error("=" * 80)
+        logger.error(f"\nExpected file: {data_path}")
+        logger.error("\nThis demo ONLY works with real ULB data. No synthetic fallback.")
+        logger.error("\nTo download the dataset:")
+        logger.error("  python download_ulb_data.py")
+        logger.error("\nOr download manually from:")
+        logger.error("  https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud")
+        logger.error("\nPlace 'creditcard.csv' in the 'data/raw/' folder.")
+        sys.exit(1)
+    
     df = pd.read_csv(data_path)
     df = df.rename(columns={'Class': 'isFraud'})
     logger.info(f"Loaded {len(df)} transactions, fraud rate: {df['isFraud'].mean():.4f}")
